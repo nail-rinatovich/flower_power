@@ -1,0 +1,21 @@
+{% load static %}<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Flower Power — цветы для ваших маленьких и больших моментов. Авторские букеты и нежные монобукеты.">
+  <title>{% block title %}Flower Power — цветы с чувством{% endblock %}</title>
+  <link rel="icon" href="{% static 'shop/placeholder.svg' %}" type="image/svg+xml">
+  <link rel="stylesheet" href="{% static 'shop/style.css' %}">
+  <script src="{% static 'shop/app.js' %}" defer></script>
+</head>
+<body>
+  <div class="announcement">Немного цветов. Много чувств. <span>Собираем каждый букет с любовью ♡</span></div>
+  <header class="header wrap">
+    <a class="brand" href="{% url 'shop:catalog' %}" aria-label="Flower Power — главная"><span class="brand-flower">✳</span><span>flower<span class="brand-second">power<span class="brand-dot">®</span></span></span></a>
+    <nav aria-label="Главная навигация"><a href="{% url 'shop:catalog' %}#catalog">Каталог</a><a href="{% url 'shop:catalog' %}#about">О нас</a><a href="{% url 'shop:catalog' %}#care">Забота о цветах</a></nav>
+    <a class="cart-link" href="{% url 'shop:cart' %}"><svg width="21" height="23" viewBox="0 0 24 26" fill="none" aria-hidden="true"><path d="M4 8h16l1 16H3L4 8Z" stroke="currentColor" stroke-width="1.5"/><path d="M8 9V6a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="1.5"/></svg><span>Корзина</span><b>{{ cart_count }}</b></a>
+  </header>
+  {% if messages %}<div class="messages wrap" aria-live="polite">{% for message in messages %}<div class="message {{ message.tags }}">{{ message }} <a href="{% url 'shop:cart' %}">В корзину →</a><button type="button" aria-label="Закрыть уведомление" data-dismiss>×</button></div>{% endfor %}</div>{% endif %}
+  <main>{% block content %}{% endblock %}</main>
+  <footer class="footer"><div class="wrap footer-top"><a class="footer-brand" href="{% url 'shop:catalog' %}">flower power ✳</a><p>Говорите о чувствах.<br>Мы поможем цветами.</p><a href="{% url 'shop:catalog' %}#catalog">Выбрать букет ↗</a></div><div class="wrap footer-bottom"><span>© {% now 'Y' %} Flower Power</span><span>Цветы для самых важных моментов</span><a href="{% url 'admin:index' %}">Вход для сотрудников ↗</a></div></footer>
+</body></html>
