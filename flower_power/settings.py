@@ -45,8 +45,6 @@ DATABASES = {'default': {
     'NAME': Path(os.environ.get('DJANGO_DB_PATH', str(BASE_DIR / 'db.sqlite3'))),
     'OPTIONS': {'timeout': 20},
 }}
-if ON_RENDER and not os.environ.get('DJANGO_DB_PATH'):
-    raise RuntimeError('Set DJANGO_DB_PATH to a persistent disk path on Render')
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},

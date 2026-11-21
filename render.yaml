@@ -1,23 +1,21 @@
-# Paid resources: persistent uploads require a paid web service and disk.
+# Free demo: SQLite and uploaded photos are ephemeral on Render Free.
 services:
   - type: web
     name: flower-power
     runtime: python
     region: frankfurt
-    plan: 0.5c-512mb
+    plan: free
     buildCommand: bash build.sh
     startCommand: bash start.sh
     healthCheckPath: /healthz/
-    disk:
-      name: flower-power-media
-      mountPath: /var/data
-      sizeGB: 1
     envVars:
       - key: DJANGO_DEBUG
         value: "0"
       - key: DJANGO_SECRET_KEY
         generateValue: true
-      - key: DJANGO_MEDIA_ROOT
-        value: /var/data/media
-      - key: DJANGO_DB_PATH
-        value: /var/data/db.sqlite3
+      - key: DJANGO_SUPERUSER_USERNAME
+        value: admin
+      - key: DJANGO_SUPERUSER_PASSWORD
+        sync: false
+      - key: SEED_DEMO_DATA
+        value: "1"
