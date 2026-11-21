@@ -1,11 +1,14 @@
 import os
 import secrets
 from pathlib import Path
+from .security import normalize_render_secret
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 ON_RENDER = os.environ.get('RENDER', '').lower() == 'true'
 DEBUG = os.environ.get('DJANGO_DEBUG', '0' if ON_RENDER else '1') == '1'
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
+if ON_RENDER:
+    SECRET_KEY = normalize_render_secret(SECRET_KEY)
 if not SECRET_KEY:
     if not DEBUG:
         raise RuntimeError('Set DJANGO_SECRET_KEY for production')
