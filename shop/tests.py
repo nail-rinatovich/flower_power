@@ -3,6 +3,10 @@ from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
 from .models import Category, Product
+from django.test import override_settings
+from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
+from tempfile import TemporaryDirectory
 
 
 class ShopTests(TestCase):
@@ -72,3 +76,25 @@ class ShopTests(TestCase):
         count = Product.objects.count()
         call_command('seed_shop', verbosity=0)
         self.assertEqual(Product.objects.count(), count)
+
+    def test_uploaded_product_photo_in_production(self):
+        # Uploads must remain accessible when Django's DEBUG-only serving is off.
+        with TemporaryDirectory() as directory:
+            with override_settings(MEDIA_ROOT=directory, DEBUG=False, SECURE_SSL_REDIRECT=False):
+                self.product.image.save('flower.png', ContentFile(b'photo-content'), save=True)
+                response = self.client.get(self.product.image.url)
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(b''.join(response.streaming_content), b'photo-content')
+                response.close()
+                orphan = default_storage.save('not-a-product.txt', ContentFile(b'private'))
+                self.assertEqual(self.client.get('/media/' + orphan).status_code, 404)
+                self.assertEqual(self.client.get('/media/missing.png').status_code, 404)
+
+    def test_health_checks_database(self):
+        from unittest.mock import patch
+        from django.db import DatabaseError
+        self.assertJSONEqual(self.client.get('/healthz/').content, {'status': 'ok'})
+        with patch('flower_power.views.connection.cursor', side_effect=DatabaseError):
+            response = self.client.get('/healthz/')
+            self.assertEqual(response.status_code, 503)
+            self.assertJSONEqual(response.content, {'status': 'unavailable'})

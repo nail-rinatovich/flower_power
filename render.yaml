@@ -1,0 +1,23 @@
+# Paid resources: persistent uploads require a paid web service and disk.
+services:
+  - type: web
+    name: flower-power
+    runtime: python
+    region: frankfurt
+    plan: 0.5c-512mb
+    buildCommand: bash build.sh
+    startCommand: bash start.sh
+    healthCheckPath: /healthz/
+    disk:
+      name: flower-power-media
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: DJANGO_DEBUG
+        value: "0"
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_MEDIA_ROOT
+        value: /var/data/media
+      - key: DJANGO_DB_PATH
+        value: /var/data/db.sqlite3
